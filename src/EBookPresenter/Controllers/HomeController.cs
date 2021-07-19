@@ -15,7 +15,8 @@ namespace EBookPresenter.Controllers
         private IEBookRepository EBookRepository { get; }
         private IConfiguration Configuration { get; }
 
-        public HomeController(IConfiguration configuration ,ILogger<HomeController> logger, IEBookRepository eBookRepository)
+        public HomeController(IConfiguration configuration, ILogger<HomeController> logger,
+            IEBookRepository eBookRepository)
         {
             Configuration = configuration;
             Logger = logger;
@@ -30,7 +31,11 @@ namespace EBookPresenter.Controllers
             var folderToRead = Configuration.GetSection("AppSettings").GetSection("FolderToRead").Value;
 
             var viewModel = new EBookViewModel
-                {EBooks = EBookRepository.GetAllEbooks(folderToRead, sortOrder), SortOrder = sortOrder};
+            {
+                EBooks = EBookRepository.GetAllEbooks(folderToRead, new PaginationFilter(), out var totalItems),
+                TotalItems = totalItems,
+                SortOrder = sortOrder
+            };
 
             return View(viewModel);
         }

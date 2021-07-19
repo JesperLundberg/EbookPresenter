@@ -6,5 +6,6 @@ namespace EBookPresenter.Models
     {
         public IEnumerable<EBook> EBooks { get; set; }
         public string SortOrder { get; set; }
+        public int TotalItems { get; set; }
     }
 }

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using EBookPresenter.Factories;
 using EBookPresenter.Models;
 using EBookPresenter.Wrappers;
-using Microsoft.Extensions.Configuration;
+
+[assembly: InternalsVisibleTo("EBookPresenter.Tests")]
 
 namespace EBookPresenter.Repositories
 {
@@ -19,7 +21,8 @@ namespace EBookPresenter.Repositories
             FileInfoFactory = fileInfoFactory;
         }
 
-        public IEnumerable<EBook> GetAllEbooks(string folderToRead, string sortOrder)
+        public IEnumerable<EBook> GetAllEbooks(string folderToRead, PaginationFilter paginationFilter,
+            out int totalItems)
         {
             var allFiles = GetEbooksRecursive(folderToRead);
 
@@ -36,12 +39,17 @@ namespace EBookPresenter.Repositories
                     {Title = Path.GetFileName(file), Path = fixedString, CreatedDate = fileInfo.CreationTime});
             }
 
-            return OrderBooks(ebooks, sortOrder);
+            var orderedBooks = OrderBooks(ebooks, paginationFilter);
+
+            totalItems = orderedBooks.Count();
+
+            return orderedBooks.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                .Take(paginationFilter.PageSize);
         }
 
-        public IEnumerable<EBook> OrderBooks(IEnumerable<EBook> ebooks, string sortOrder)
+        internal IEnumerable<EBook> OrderBooks(IEnumerable<EBook> ebooks, PaginationFilter paginationFilter)
         {
-            return sortOrder switch
+            return paginationFilter.SortOrder switch
             {
                 "creation" => ebooks.OrderByDescending(x => x.CreatedDate),
                 "alphabetic" => ebooks.OrderBy(x => x.Title),
@@ -49,7 +57,7 @@ namespace EBookPresenter.Repositories
             };
         }
 
-        public IEnumerable<string> GetEbooksRecursive(string folder)
+        internal IEnumerable<string> GetEbooksRecursive(string folder)
         {
             if (string.IsNullOrEmpty(folder))
             {

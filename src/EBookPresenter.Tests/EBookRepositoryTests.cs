@@ -40,8 +40,10 @@ namespace EBookPresenter.Tests
                 new EBook {Title = "Title3"},
                 new EBook {Title = "Title4"}
             };
+
+            var validFilter = new PaginationFilter("alphabetic");
             
-            var result = ebookRepository.OrderBooks(unorderedBookList, "alphabetic");
+            var result = ebookRepository.OrderBooks(unorderedBookList, validFilter);
             
             CollectionAssert.AreEqual(expected, result, new TitleComparer());
         }
@@ -55,7 +57,9 @@ namespace EBookPresenter.Tests
 
             var expected = unorderedBookList.OrderByDescending(x => x.CreatedDate);
             
-            var result = ebookRepository.OrderBooks(unorderedBookList, "creation");
+            var validFilter = new PaginationFilter("creation");
+
+            var result = ebookRepository.OrderBooks(unorderedBookList, validFilter);
             
             CollectionAssert.AreEqual(expected, result, new CreationDateComparer());
         }
