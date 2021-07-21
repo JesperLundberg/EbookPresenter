@@ -4,8 +4,10 @@ namespace EBookPresenter.Models
 {
     public class EBookViewModel
     {
-        public IEnumerable<EBook> EBooks { get; set; }
-        public string SortOrder { get; set; }
-        public int TotalItems { get; set; }
+        public IEnumerable<EBook> EBooks { get; init; }
+        public string SortOrder { get; init; }
+        public int TotalItems { get; init; }
+        public string NextPageUrl { get; set; }
+        public string PreviousPageUrl { get; set; }
     }
 }

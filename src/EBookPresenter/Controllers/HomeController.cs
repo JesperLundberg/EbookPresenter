@@ -5,6 +5,7 @@ using EBookPresenter.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace EBookPresenter.Controllers
@@ -27,17 +28,31 @@ namespace EBookPresenter.Controllers
         {
             //read cookie from Request object  
             var sortOrder = Request.Cookies["SortOrder"];
-
+            
             var folderToRead = Configuration.GetSection("AppSettings").GetSection("FolderToRead").Value;
 
+            var paginationFilter = new PaginationFilter(sortOrder);
+            
             var viewModel = new EBookViewModel
             {
-                EBooks = EBookRepository.GetAllEbooks(folderToRead, new PaginationFilter(), out var totalItems),
+                EBooks = EBookRepository.GetAllEbooks(folderToRead, paginationFilter, out var totalItems),
                 TotalItems = totalItems,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
+                PreviousPageUrl = GetPreviousPage(paginationFilter, totalItems),
+                NextPageUrl = GetNextPage(paginationFilter, totalItems)
             };
 
             return View(viewModel);
+        }
+
+        private string GetPreviousPage(PaginationFilter paginationFilter, int totalItems)
+        {
+            if (paginationFilter.PageNumber > 2)
+            {
+                return "";
+            }
+
+            return "~/Home/"
         }
 
         public RedirectToActionResult ToggleSortOrder()
