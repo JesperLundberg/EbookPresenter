@@ -38,21 +38,36 @@ namespace EBookPresenter.Controllers
                 EBooks = EBookRepository.GetAllEbooks(folderToRead, paginationFilter, out var totalItems),
                 TotalItems = totalItems,
                 SortOrder = sortOrder,
-                PreviousPageUrl = GetPreviousPage(paginationFilter, totalItems),
+                PreviousPageUrl = GetPreviousPage(paginationFilter),
                 NextPageUrl = GetNextPage(paginationFilter, totalItems)
             };
 
             return View(viewModel);
         }
 
-        private string GetPreviousPage(PaginationFilter paginationFilter, int totalItems)
+        public IActionResult Index(EBookViewModel viewModel)
         {
-            if (paginationFilter.PageNumber > 2)
+            
+            
+            return View(viewModel);
+        }
+
+        private string GetNextPage(PaginationFilter paginationFilter, int totalItems)
+        {
+            // TODO: If next page is less than totalItems / pageSize
+            // TODO: Return pageNumber + 1 link
+            
+            return string.Empty;
+        }
+
+        private string GetPreviousPage(PaginationFilter paginationFilter)
+        {
+            if (paginationFilter.PageNumber > 2)00
             {
-                return "";
+                return string.Empty;
             }
 
-            return "~/Home/"
+            return "~/Home/";
         }
 
         public RedirectToActionResult ToggleSortOrder()
